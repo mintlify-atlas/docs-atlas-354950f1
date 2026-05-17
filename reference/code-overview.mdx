@@ -1,0 +1,103 @@
+---
+title: "APreds UI source code structure and runtime architecture"
+description: "How APreds UI is structured: Plugin entry point, Main MonoBehaviour lifecycle, PatchLoader, and the Extensions helper — and how each part interacts at runtime."
+---
+
+This page covers the internal structure of APreds UI for anyone who wants to understand how the mod works or extend it. The codebase is small — four files across two namespaces — but each plays a distinct role in the BepInEx and Unity lifecycle.
+
+## Project structure
+
+```text
+APreds-UI/
+├── Plugin.cs            # BepInEx entry point
+├── Core/
+│   ├── Main.cs          # Core mod logic (MonoBehaviour)
+│   └── Extensions.cs    # Unity component helper extension
+└── Stuff/
+    ├── Constantss.cs    # Plugin metadata constants
+    └── PatchLoader.cs   # HarmonyX patch loader
+```
+
+## Plugin entry point (Plugin.cs)
+
+`Plugin` is the BepInEx plugin class, identified by the `[BepInPlugin]` attribute. BepInEx instantiates it as a Unity MonoBehaviour when the game loads.
+
+```csharp Plugin.cs
+[BepInPlugin(Constantss.GUID, Constantss.Name, Constantss.Version)]
+public class Plugin : BaseUnityPlugin
+{
+    void Awake()
+    {
+        GameObject Plugin = new GameObject(Constantss.ObjectName);
+        Plugin.AddComponent<Main>();
+        DontDestroyOnLoad(Plugin);
+    }
+
+    void Start()
+    {
+        PatchLoader.Apply();
+    }
+}
+```
+
+**`Awake()`** runs first. It creates a new GameObject named `AUIOBJ`, attaches the `Main` MonoBehaviour to it, and calls `DontDestroyOnLoad` so the object — and all mod state — survives scene transitions (such as entering or leaving a room).
+
+**`Start()`** runs after `Awake()`, once all objects in the scene are initialized. It calls `PatchLoader.Apply()` to register HarmonyX patches with the runtime.
+
+## Main MonoBehaviour (Core/Main.cs)
+
+`Main` is the heart of the mod. It extends `MonoBehaviour` and lives on the `AUIOBJ` GameObject for the lifetime of the game session.
+
+**`OnGUI()`** is Unity's immediate-mode GUI callback, called every frame when the GUI is being rendered. On its first invocation, `Main` calls `INIT()` to build the custom `GUIStyle` objects (dark window background, styled sliders and buttons) and sets `StylesLoaded = true` so `INIT()` only runs once. If `IsOpen` is `true`, it then renders the floating window via `GUILayout.Window`.
+
+**`Update()`** runs every frame. It does three things:
+
+1. Detects a change in the `IsPredOn` toggle. When `IsPredOn` transitions from `false` to `true` it calls `EnablePreds()`; when it transitions from `true` to `false` it calls `DisablePreds()`. A separate `lastPredState` field tracks the previous value to detect the transition.
+2. Calls `MakePreds()` each frame while `IsPredOn` is `true`.
+3. Checks whether the **U** key was pressed this frame (`Keyboard.current.uKey.wasPressedThisFrame`) and toggles `IsOpen` accordingly.
+
+**`EnablePreds()`** creates two invisible cube GameObjects (`LT` for left hand, `RT` for right hand). For each cube it removes the `BoxCollider` and `Rigidbody` using `Obliterate()` (so they have no physics presence), disables the `Renderer`, and attaches a `GorillaVelocityTracker` component so the game's own velocity-tracking logic can sample each hand's movement.
+
+**`DisablePreds()`** calls `Destroy` on both `LT` and `RT` and sets them to `null`, cleaning up all resources.
+
+**`MakePreds()`** is the per-frame prediction loop. Each frame it:
+
+1. Guards against null references (`LT`/`RT`, `GTPlayer.Instance`, `GorillaTagger.Instance`, and the hand/head transforms).
+2. Mirrors the left and right hand transform positions onto the tracker cubes so `GorillaVelocityTracker` samples the correct locations.
+3. Reads average velocity from each tracker and clamps it to a magnitude of `5` to prevent runaway values.
+4. For each hand, if velocity magnitude exceeds `movementThreshold`, computes a target position as `currentPosition + velocity * PredSrength` and Lerps the hand transform toward that target using `smoothness` as the `t` factor.
+5. Clamps both hand positions to within `maxArmLength` units of the head center using `Vector3.ClampMagnitude`.
+
+## HarmonyX patches (Stuff/PatchLoader.cs)
+
+`PatchLoader.Apply()` instantiates a `Harmony` instance keyed to the plugin GUID and calls `PatchAll()`.
+
+```csharp Stuff/PatchLoader.cs
+public class PatchLoader
+{
+    public static void Apply()
+    {
+        Harmony VALLL = new Harmony(Constantss.GUID);
+        VALLL.PatchAll();
+    }
+}
+```
+
+`PatchAll()` scans every type in the calling assembly for `[HarmonyPatch]` attributes and applies any patches it finds. In version `0.0.2` there are no explicit `[HarmonyPatch]` attributes anywhere in the codebase, so `PatchAll()` currently registers nothing. The infrastructure is in place for future patches without requiring changes to `Plugin.cs`.
+
+## Component helper (Core/Extensions.cs)
+
+`Extensions` provides a single extension method on Unity's `Component` base class:
+
+```csharp Core/Extensions.cs
+public static void Obliterate(this Component comp)
+{
+    if (comp != null) UnityEngine.Object.Destroy(comp);
+}
+```
+
+`Obliterate()` is a null-safe wrapper around `UnityEngine.Object.Destroy`. It is used in `EnablePreds()` to remove the `BoxCollider` and `Rigidbody` from the tracker cubes — components that Unity adds automatically when you call `CreatePrimitive(PrimitiveType.Cube)`. Destroying them prevents the cubes from interacting with the physics simulation or triggering collisions while they shadow the hand positions.
+
+<Info>
+  APreds UI targets **.NET 4.8** (`net48`) to match the Unity runtime version used by Gorilla Tag. If you add dependencies, ensure they also target `net48` or a compatible profile.
+</Info>

@@ -1,0 +1,55 @@
+---
+title: "APreds UI slider settings and plugin identity reference"
+description: "Complete reference for all slider settings in APreds UI, including their runtime defaults, valid ranges, and effects on hand prediction behavior in Gorilla Tag."
+---
+
+APreds UI has no config file. Every setting lives in memory and is controlled exclusively through the in-game GUI window. When you close Gorilla Tag and relaunch, all values return to their defaults — you must re-tune them each session.
+
+## Runtime settings
+
+Each setting below corresponds to a slider in the **APreds UI** window. The slider label matches what appears in the GUI; the internal variable name is the C# field in `Core/Main.cs`.
+
+<ParamField path="PredSrength" type="float" default="0.0">
+  **Preds Strength** — Range: `0.001`–`0.2`
+
+  Multiplied by the current hand velocity each frame to compute the predicted target position. Higher values cause your hands to move further ahead of their current position.
+</ParamField>
+
+<ParamField path="movementThreshold" type="float" default="0.01">
+  **Movement Threshold** — Range: `0.01`–`0.3`
+
+  Minimum velocity magnitude required before prediction is applied. Below this threshold the hand stays at its current position, preventing jitter when your hands are still.
+</ParamField>
+
+<ParamField path="smoothness" type="float" default="0.05">
+  **Smoothness** — Range: `0.01`–`0.5`
+
+  The interpolation factor (`Lerp` `t`) applied per frame. Values closer to `0` produce gradual, smooth motion; values closer to `0.5` produce an immediate snap toward the predicted position.
+</ParamField>
+
+<ParamField path="maxArmLength" type="float" default="1.0">
+  **Max Arm Length** — Range: `1.0`–`2.5`
+
+  Clamps the distance between your hand and your head center after prediction is applied. Prevents arms from extending beyond this radius (in Unity units), keeping predicted positions physically plausible.
+</ParamField>
+
+## Plugin identity
+
+These constants are defined in `Stuff/Constantss.cs` and are fixed at compile time. They identify the plugin to BepInEx and HarmonyX.
+
+| Constant | Value |
+|---|---|
+| GUID | `Astras.Prediction.UI` |
+| Plugin name | `APredsUI` |
+| Version | `0.0.2` |
+| GameObject name | `AUIOBJ` |
+
+## Settings persistence
+
+APreds UI does **not** write any configuration to disk. All slider values are stored as private fields in the `Main` MonoBehaviour instance attached to the `AUIOBJ` GameObject. When the game process ends, those values are lost. There is no `config/` folder, no `.cfg` file, and no registry entry written by this mod.
+
+This means you must re-tune your preferred values every time you launch Gorilla Tag. If you want consistent behavior across sessions, note down your preferred values from the on-screen readouts (e.g., `Strength set to 0.150`) and re-enter them manually after each launch.
+
+<Note>
+  This reference documents version `0.0.2`. Check the [GitHub repository](https://github.com/ASTRA228b/APreds-UI) for newer releases that may add persistence or new settings.
+</Note>

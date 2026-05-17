@@ -1,133 +1,44 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
-icon: 'star'
+title: "APreds UI: In-Game Prediction Controller for Gorilla Tag"
+description: "APreds UI is a BepInEx mod that adds a draggable in-game GUI to configure movement predictions in Gorilla Tag with real-time sliders and one-click presets."
 ---
 
-## Setting up
+APreds UI is a BepInEx plugin for Gorilla Tag that brings a fully interactive in-game overlay for tuning movement prediction (preds) settings. Toggle the panel with the **U** key, adjust strength, smoothness, and arm length in real time, or snap to built-in presets — all without leaving your session.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Drop the DLL into your BepInEx plugins folder and launch Gorilla Tag.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Open the UI and make your first prediction adjustment in under a minute.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Prediction settings" icon="sliders" href="/guides/prediction-settings">
+    Tune strength, movement threshold, smoothness, and max arm length.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Presets" icon="bolt" href="/guides/presets">
+    Use Max, Random, or Reset to quickly change your prediction strength.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## How it works
 
-Everything you need to create world-class documentation.
+APreds UI hooks into the Gorilla Tag runtime via BepInEx and applies hand-position prediction every frame when enabled. The mod creates invisible tracker objects attached to your left and right hands, samples their velocity using `GorillaVelocityTracker`, then nudges each hand position forward by a configurable amount — giving you a smoother, more responsive feel during fast movement.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+<Steps>
+  <Step title="Install BepInEx and the mod DLL">
+    Place the compiled `APredsUI.dll` in your BepInEx plugins folder. See the [installation guide](/installation) for the exact path.
+  </Step>
+  <Step title="Launch Gorilla Tag">
+    Start the game. BepInEx loads APreds UI automatically on startup.
+  </Step>
+  <Step title="Open the overlay">
+    Press **U** in-game to open the APreds UI panel. The window is draggable — position it anywhere on screen.
+  </Step>
+  <Step title="Tune your settings">
+    Enable predictions with the toggle, then dial in **Preds Strength**, **Movement Threshold**, **Smoothness**, and **Max Arm Length** using the sliders.
+  </Step>
+</Steps>
 
-## Make your content agent ready
-
-Make your docs work for humans and AI agents alike.
-
-<Columns cols={2}>
-  <Card
-    title="Prompt component"
-    icon="robot"
-    href="/agent-ready/prompt"
-  >
-    Embed shareable AI prompts readers can copy or open in Cursor.
-  </Card>
-  <Card
-    title="Visibility"
-    icon="eye"
-    href="/agent-ready/visibility"
-  >
-    Show different content to humans and agents reading your docs.
-  </Card>
-  <Card
-    title="Contextual menu"
-    icon="bolt"
-    href="/agent-ready/contextual"
-  >
-    Give readers one-click access to Claude, ChatGPT, Cursor, and more.
-  </Card>
-  <Card
-    title="AI coding tools"
-    icon="wand-magic-sparkles"
-    href="/ai-tools/claude-code"
-  >
-    Set up Claude Code, Cursor, or Windsurf with Mintlify's skill.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Note>
+  APreds UI is designed to work alongside **Astra's PullMod V1**. Make sure PullMod is installed before enabling predictions.
+</Note>

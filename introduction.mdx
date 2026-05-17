@@ -1,0 +1,45 @@
+---
+title: "APreds UI: Gorilla Tag in-game prediction mod overview"
+description: "APreds UI is a BepInEx plugin for Gorilla Tag that adds an in-game GUI to enable and tune movement prediction settings in real time without restarting the game."
+---
+
+APreds UI is a BepInEx plugin that adds a draggable overlay window directly inside Gorilla Tag. It lets you enable, disable, and tune movement prediction values without restarting the game — press **U** to open the panel at any time while playing.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="In-game overlay UI" icon="window-restore">
+    A 360×460 px IMGUI window rendered over the game. Drag it anywhere on screen by its title bar.
+  </Card>
+  <Card title="Prediction tuning" icon="sliders">
+    Adjust **Preds Strength** and related values in real time with sliders — no config file editing required.
+  </Card>
+  <Card title="Built-in presets" icon="bookmark">
+    Three one-click preset buttons — **Max**, **Random Setting**, and **Reset** — instantly change your Preds Strength value.
+  </Card>
+  <Card title="BepInEx plugin architecture" icon="puzzle-piece">
+    Loads automatically through BepInEx on game start. Uses HarmonyX patches and Unity IMGUI — no game files are modified.
+  </Card>
+</CardGroup>
+
+## Requirements
+
+Before installing APreds UI, make sure you have the following:
+
+- **Gorilla Tag** installed via Steam
+- **BepInEx** installed in the Gorilla Tag game directory
+- **Astra's PullMod V1** installed
+
+<Note>
+  APreds UI is designed to work alongside Astra's PullMod V1. Install PullMod V1 first to get the full prediction experience.
+</Note>
+
+## Plugin metadata
+
+These values are registered with BepInEx at startup, as defined in `Stuff/Constantss.cs`:
+
+```csharp Stuff/Constantss.cs
+public const string GUID    = "Astras.Prediction.UI";
+public const string Name    = "APredsUI";
+public const string Version = "0.0.2";
+```

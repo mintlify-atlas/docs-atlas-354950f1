@@ -1,0 +1,38 @@
+---
+title: "Install APreds UI in your Gorilla Tag BepInEx folder"
+description: "Step-by-step guide to installing the APreds UI BepInEx mod into your Gorilla Tag game directory on Windows. Covers the correct MO plugin subfolder path."
+---
+
+Installing APreds UI takes about two minutes. You copy a single DLL into the correct BepInEx subfolder and the mod loads automatically the next time you launch Gorilla Tag.
+
+<Steps>
+  <Step title="Verify Gorilla Tag is installed via Steam">
+    Open Steam and confirm Gorilla Tag appears in your library with a **Play** button. If the game is not installed, install it before continuing.
+  </Step>
+  <Step title="Ensure BepInEx is installed">
+    Navigate to your Gorilla Tag game directory and confirm a `BepInEx` folder exists at the root. If it is missing, install BepInEx for Gorilla Tag before proceeding.
+  </Step>
+  <Step title="Download the APredsUI.dll release">
+    Obtain the `APredsUI.dll` file from the release page. Do not rename or modify the file.
+  </Step>
+  <Step title="Place the DLL in the correct plugin subfolder">
+    Copy `APredsUI.dll` into the following path inside your Gorilla Tag installation:
+
+    ```text
+    C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag\BepInEx\plugins\MO\
+    ```
+
+    Create the `MO` subfolder if it does not already exist.
+  </Step>
+  <Step title="Launch Gorilla Tag">
+    Start Gorilla Tag through Steam. BepInEx detects and loads `APredsUI.dll` automatically during startup. No additional configuration is required.
+  </Step>
+</Steps>
+
+<Warning>
+  Do not place `APredsUI.dll` directly in `BepInEx\plugins\`. The mod must go inside the `MO` subfolder — placing it in the root plugins directory may cause it to fail to load or conflict with other mods.
+</Warning>
+
+<Note>
+  The `MO` output path is specified in the project's `.csproj` file as the post-build copy destination. If you build the mod from source, the DLL is placed there automatically.
+</Note>

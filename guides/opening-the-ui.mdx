@@ -1,0 +1,37 @@
+---
+title: "Open, navigate, and reposition the APreds UI overlay"
+description: "Learn how to open, close, and reposition the APreds UI overlay panel in Gorilla Tag. Press U to toggle the window and drag the title bar to move it."
+---
+
+APreds UI renders a floating overlay panel inside Gorilla Tag that gives you direct control over prediction settings without leaving the game. The panel is minimal by design — a single window with a toggle, four sliders, preset buttons, and a close button — so you can adjust settings quickly and get back to playing.
+
+## Toggling the panel
+
+Press **U** on your keyboard to open the panel. Pressing **U** again closes it. There is no in-game menu integration and no alternative keybind — **U** is the only way to show or hide the overlay.
+
+<Info>
+  The panel persists between room joins. APreds UI creates its GameObject with `DontDestroyOnLoad`, so the window and all your current settings carry over when you change rooms or return to the lobby.
+</Info>
+
+## Repositioning the window
+
+When the panel first opens it appears at position `(155, 155)` on screen. You can drag it anywhere by clicking and holding the title bar at the top of the window. The panel is a standard Unity IMGUI `GUILayout.Window` (`360 × 460` px), so it behaves like any draggable dialog — release the title bar to drop it in place.
+
+## Panel layout
+
+The window contains the following elements from top to bottom:
+
+<Steps>
+  <Step title="Enable Predictions toggle">
+    The **Enable Predictions** checkbox at the top of the panel activates or deactivates the prediction system entirely. When unchecked, no prediction math runs and your hands move normally.
+  </Step>
+  <Step title="Four sliders">
+    Below the toggle are four labeled sliders — **Preds Strength**, **Movement Threshold**, **Smoothness**, and **Max Arm Length** — each displaying its current value next to the label. See [Configure prediction settings](/guides/prediction-settings) for details on each slider.
+  </Step>
+  <Step title="Preset buttons">
+    Three buttons — **Max**, **Random Setting**, and **Reset** — instantly change **Preds Strength** without touching the slider. See [Use presets](/guides/presets) for details.
+  </Step>
+  <Step title="Close button">
+    The **Close** button at the bottom of the panel hides the window. It behaves identically to pressing **U**.
+  </Step>
+</Steps>

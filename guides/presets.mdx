@@ -1,0 +1,41 @@
+---
+title: "Use APreds UI preset buttons to set prediction strength"
+description: "APreds UI includes three presets — Max, Random Setting, and Reset — that instantly change your Preds Strength without manually moving the slider."
+---
+
+APreds UI provides three preset buttons that set `PredSrength` to a specific value with a single click. Presets are useful when you want to jump to a known configuration quickly — before a session, after experimenting with the slider, or when you want a clean baseline. All other settings (**Movement Threshold**, **Smoothness**, and **Max Arm Length**) are unaffected by presets and retain whatever values you last set.
+
+## Available presets
+
+### Max
+
+**Max** sets `PredSrength` to `0.2f`, the highest value on the slider range. Use this when you want the strongest possible prediction effect — the target offset per frame will be at its maximum, making your hand lead its actual position as aggressively as the plugin allows.
+
+### Random Setting
+
+**Random Setting** calls `UnityEngine.Random.Range(0.001f, 0.2f)` and assigns the result to `PredSrength`. Each press generates a different value somewhere between the minimum and maximum. Use this when you want to experiment or vary your settings between sessions without manually positioning the slider.
+
+### Reset
+
+**Reset** sets `PredSrength` to `0.001f`, the minimum value. At this level the prediction offset is negligible — effectively returning your hands to baseline movement. Use this before leaving a session to avoid leaving an active prediction strength that might affect movement unexpectedly the next time you load in.
+
+<Tip>
+  Use **Reset** before switching rooms or ending a session. It ensures you start fresh next time rather than picking up where aggressive settings left off.
+</Tip>
+
+## Preset source code
+
+The three buttons map directly to these assignments in the plugin's UI rendering loop:
+
+```csharp GUILayout window draw call
+if (GUILayout.Button("Max", BStyle))
+    PredSrength = 0.2f;
+if (GUILayout.Button("Random Setting", BStyle))
+    PredSrength = UnityEngine.Random.Range(0.001f, 0.2f);
+if (GUILayout.Button("Reset", BStyle))
+    PredSrength = 0.001f;
+```
+
+<Note>
+  After using any preset, the **Preds Strength** slider updates to reflect the new value. You can immediately fine-tune from there by dragging the slider — the preset is just a starting point.
+</Note>

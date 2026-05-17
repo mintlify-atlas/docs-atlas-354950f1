@@ -1,0 +1,62 @@
+---
+title: "Configure the four prediction sliders in APreds UI"
+description: "Adjust Preds Strength, Movement Threshold, Smoothness, and Max Arm Length sliders to tune how APreds UI predicts and moves your hands in Gorilla Tag."
+---
+
+Each frame that **Enable Predictions** is active, APreds UI reads the velocity of each hand, projects a target position ahead of where your hand is moving, and lerps your hand toward that target. The four sliders control how aggressively the prediction runs, when it kicks in, how smoothly your hand follows, and how far it can reach. Tuning them together lets you dial in a feel that ranges from barely noticeable to highly exaggerated.
+
+<AccordionGroup>
+  <Accordion title="Preds Strength">
+    **Range:** `0.001` – `0.2`
+
+    `PredSrength` is the scalar multiplied by your hand's current velocity to compute the prediction offset. A value of `0.1` means the target is placed `0.1 × velocity` units ahead of your hand each frame. Lower values produce a subtle forward nudge; higher values push the target much further ahead of actual hand position.
+
+    Start at the low end and increase gradually. The effect compounds with fast movement, so a value that feels fine while moving slowly may feel jarring during a quick swing.
+  </Accordion>
+
+  <Accordion title="Movement Threshold">
+    **Range:** `0.01` – `0.3`
+
+    `movementThreshold` is the minimum velocity magnitude your hand must exceed before any prediction is applied. If the measured velocity is at or below this value, the hand position is left unchanged for that frame.
+
+    A low threshold (near `0.01`) means prediction activates during almost any movement. A high threshold (toward `0.3`) restricts prediction to fast, intentional swings and ignores slow drifts or minor controller jitter.
+  </Accordion>
+
+  <Accordion title="Smoothness">
+    **Range:** `0.01` – `0.5`
+
+    `smoothness` is the `t` parameter passed to `Vector3.Lerp` each frame. It controls how quickly your hand position moves toward the predicted target.
+
+    Lower values (near `0.01`) produce a gradual, delayed follow — your hand trails behind the target smoothly. Higher values (toward `0.5`) make your hand snap to the target much faster, producing a snappier but less fluid feel. At very high values the effect begins to feel instantaneous.
+  </Accordion>
+
+  <Accordion title="Max Arm Length">
+    **Range:** `1.0` – `2.5`
+
+    `maxArmLength` clamps the distance between your hand and your head center using `Vector3.ClampMagnitude`. After the lerp step, if the predicted hand position would place your hand further than `maxArmLength` units from your head, it is pulled back to exactly that distance.
+
+    This acts as a safety limiter to prevent the prediction from moving your hands to physically implausible positions. Keep this close to `1.0` unless you intentionally want extended reach.
+
+    <Warning>
+      Setting **Max Arm Length** close to `2.5` may cause your arms to visually stretch well beyond their normal range, which can look unnatural to other players and interfere with normal gameplay physics.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+## How the settings interact
+
+The code below from `MakePreds()` shows the exact order of operations for the left hand each frame. The same logic runs for the right hand in parallel.
+
+```csharp MakePreds()
+Vector3 target = leftHand.position + leftVel * PredSrength;
+leftHand.position = Vector3.Lerp(leftHand.position, target, smoothness);
+leftHand.position = Vector3.ClampMagnitude(leftHand.position - head.position, maxArmLength) + head.position;
+```
+
+1. A `target` is computed by adding `PredSrength × velocity` to the current hand position.
+2. The hand lerps toward that target using `smoothness` as the interpolation factor.
+3. The result is clamped so the hand stays within `maxArmLength` of the head.
+
+<Tip>
+  Increase **Preds Strength** gradually — one small step at a time. High values combined with fast movement amplify the predicted offset significantly and can make your hands feel out of control.
+</Tip>

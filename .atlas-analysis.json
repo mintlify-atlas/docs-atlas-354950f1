@@ -1,0 +1,53 @@
+{
+  "projectType": "general",
+  "projectName": "APreds UI",
+  "projectDescription": "A BepInEx mod for Gorilla Tag that provides an in-game GUI for configuring and controlling movement prediction (preds) settings via Astra's PullMod.",
+  "theme": "almond",
+  "primaryColor": "#0099FF",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Using the Mod",
+        "pages": [
+          "guides/opening-the-ui",
+          "guides/prediction-settings",
+          "guides/presets"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/configuration",
+          "reference/code-overview"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "In-game overlay GUI toggled with the U key",
+    "Enable/disable movement predictions at runtime",
+    "Adjustable prediction strength (0.001 to 0.2)",
+    "Configurable movement threshold and smoothness",
+    "Max arm length limiter for safe hand positioning",
+    "Built-in presets: Max, Random, and Reset",
+    "BepInEx + HarmonyX plugin architecture",
+    "Persistent GameObject that survives scene loads"
+  ],
+  "publicApiSurface": [
+    "Plugin (BepInPlugin entry point, GUID: Astras.Prediction.UI)",
+    "Main : MonoBehaviour (core mod logic, OnGUI/Update)",
+    "PatchLoader.Apply() (applies HarmonyX patches)",
+    "Extensions.Obliterate(Component) (destroys a Unity component safely)",
+    "Constantss.GUID / Name / Version / ObjectName (plugin metadata)"
+  ]
+}
